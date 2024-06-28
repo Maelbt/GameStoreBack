@@ -34,7 +34,7 @@ mounts:
     "/var": { source: local, source_path: var }
 
 relationships:
-    postgresql: 'database:mysql'
+    database: 'database:mysql'
     
 
 hooks:
