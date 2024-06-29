@@ -1,5 +1,5 @@
 database:
-    type: mysql:8
+    type: mysql:8.0.37
     disk: 512
 
 
