@@ -1,17 +1,5 @@
-#list:
- #   path: /tasks
- #   controller: App\Controller\TaskController::list
-
-#task_show:
- #   path: /task/{id<\d+>?0}
- #   controller: App\Controller\TaskController::task_show
- #   methods: [GET, POST]
- #   schemes: [https]
-
-#redirection_vers_nouvelle_page:
- #   path: /ancienne_page
- #   controller: Symfony\Bundle\Frameworks\Controller\RedirectController
- #   defaults:
- #        route: ‘nom_nouvelle_route’
- #        permanent: true
- #        keepQueryParams: true
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
