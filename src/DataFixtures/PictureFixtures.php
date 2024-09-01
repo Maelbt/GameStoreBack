@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Restaurant;
+use App\Entity\Game;
 use App\Service\Utils;
 use App\Entity\Picture;
 use DateTimeImmutable;
@@ -17,14 +17,14 @@ class PictureFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         for ($i = 1; $i <= 20; $i++) {
-            /** @var Restaurant $restaurant */
-            $restaurant = $this->getReference("restaurant" . random_int(1, 20));
+            /** @var Game $game */
+            $game = $this->getReference("game" . random_int(1, 20));
             $title = "Article n°$i";
 
             $picture = (new Picture())
                 ->setTitle($title)
                 ->setSlug("slug")
-                ->setRestaurant($restaurant)
+                ->setGame($game)
                 ->setCreatedAt(new DateTimeImmutable());
 
             $manager->persist($picture);
@@ -35,6 +35,6 @@ class PictureFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies(): array
     {
-        return [RestaurantFixtures::class];
+        return [GameFixtures::class];
     }
 }

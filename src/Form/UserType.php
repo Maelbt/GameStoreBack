@@ -24,8 +24,6 @@ class UserType extends AbstractType
             ->add('apiToken')
             ->add('firstName')
             ->add('lastName')
-            ->add('guestNumber')
-            ->add('allergy')
         ;
     }
 

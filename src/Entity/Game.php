@@ -2,30 +2,27 @@
 
 namespace App\Entity;
 
-use App\Repository\FoodRepository;
+use App\Repository\GameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: FoodRepository::class)]
-class Food
+#[ORM\Entity(repositoryClass: GameRepository::class)]
+class Game
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 36)]
-    private ?string $uuid = null;
-
-    #[ORM\Column(length: 64)]
-    private ?string $title = null;
+    #[ORM\Column(length: 32)]
+    private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[ORM\Column]
+    #[ORM\Column(length:32)]
     private ?int $price = null;
 
     #[ORM\Column]
@@ -34,12 +31,12 @@ class Food
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'food')]
-    private Collection $Category;
+    #[ORM\OneToMany(targetEntity: Picture::class, mappedBy: 'restaurant', orphanRemoval: true)]
+    private Collection $pictures;
 
     public function __construct()
     {
-        $this->Category = new ArrayCollection();
+        $this->pictures = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -47,26 +44,14 @@ class Food
         return $this->id;
     }
 
-    public function getUuid(): ?string
+    public function getName(): ?string
     {
-        return $this->uuid;
+        return $this->name;
     }
 
-    public function setUuid(string $uuid): static
+    public function setName(string $name): static
     {
-        $this->uuid = $uuid;
-
-        return $this;
-    }
-
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    public function setTitle(string $title): static
-    {
-        $this->title = $title;
+        $this->name = $name;
 
         return $this;
     }
@@ -120,25 +105,31 @@ class Food
     }
 
     /**
-     * @return Collection<int, Category>
+     * @return Collection<int, Picture>
      */
-    public function getCategory(): Collection
+    public function getPictures(): Collection
     {
-        return $this->Category;
+        return $this->pictures;
     }
 
-    public function addCategory(Category $category): static
+    public function addPicture(Picture $picture): static
     {
-        if (!$this->Category->contains($category)) {
-            $this->Category->add($category);
+        if (!$this->pictures->contains($picture)) {
+            $this->pictures->add($picture);
+            $picture->setGame($this);
         }
 
         return $this;
     }
 
-    public function removeCategory(Category $category): static
+    public function removePicture(Picture $picture): static
     {
-        $this->Category->removeElement($category);
+        if ($this->pictures->removeElement($picture)) {
+            // set the owning side to null (unless already changed)
+            if ($picture->getGame() === $this) {
+                $picture->setGame(null);
+            }
+        }
 
         return $this;
     }

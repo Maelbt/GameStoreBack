@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Restaurant;
-use App\Repository\RestaurantRepository;
+use App\Entity\Game;
+use App\Repository\GameRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
@@ -16,11 +16,11 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 #[Route('api/restaurant', name: 'app_api_restaurant_')]
 
-class RestaurantController extends AbstractController
+class GameController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $manager,
-        private RestaurantRepository $repository,
+        private GameRepository $repository,
         private SerializerInterface $serializer,
         private UrlGeneratorInterface $urlGenerator,
         )
@@ -28,36 +28,36 @@ class RestaurantController extends AbstractController
     }
 
     #[OA\Put(
-        path: '/api/restaurant/{id}',
-        summary: 'Modifier un restaurant par ID',
+        path: '/api/game/{id}',
+        summary: 'Modifier un jeu par ID',
         parameters: [
             new OA\Parameter(
                 name: 'id',
                 in: 'path',
                 required: true,
-                description: 'ID du restaurant à modifier',
+                description: 'ID du jeu à modifier',
                 schema: new OA\Schema(type: 'integer')
             )
         ],
         requestBody: new OA\RequestBody(
             required: true,
-            description: 'Nouvelles données du restaurant à mettre à jour',
+            description: 'Nouvelles données du jeu à mettre à jour',
             content: new OA\JsonContent(
                 type: 'object',
                 properties: [
-                    new OA\Property(property: 'name', type: 'string', example: 'Nouveau nom du restaurant'),
-                    new OA\Property(property: 'description', type: 'string', example: 'Nouvelle description du restaurant')
+                    new OA\Property(property: 'name', type: 'string', example: 'Nouveau nom du jeu'),
+                    new OA\Property(property: 'description', type: 'string', example: 'Nouvelle description du jeu')
                 ]
             )
         ),
         responses: [
             new OA\Response(
                 response: 204,
-                description: 'Restaurant modifié avec succès'
+                description: 'Jeu modifié avec succès'
             ),
             new OA\Response(
                 response: 404,
-                description: 'Restaurant non trouvé'
+                description: 'Jeu non trouvé'
             )
         ]
     )]
@@ -65,16 +65,16 @@ class RestaurantController extends AbstractController
     #[Route('/{id}', name: 'edit', methods: 'PUT')]
     public function edit(int $id, Request $request): JsonResponse
     {
-        // ... Edite le restaurant et le sauvegarde en BDD
-        $restaurant = $this->repository->findOneBy(['id' => $id]);
-        if ($restaurant) {
-           $restaurant = $this->serializer->deserialize(
+        // ... Edite le jeu et le sauvegarde en BDD
+        $game = $this->repository->findOneBy(['id' => $id]);
+        if ($game) {
+           $game = $this->serializer->deserialize(
                $request->getContent(),
-               Restaurant::class,
+               Game::class,
                'json',
-               [AbstractNormalizer::OBJECT_TO_POPULATE => $restaurant]
+               [AbstractNormalizer::OBJECT_TO_POPULATE => $game]
                );
-           $restaurant->setUpdatedAt(new DateTimeImmutable());
+           $game->setUpdatedAt(new DateTimeImmutable());
 
            $this->manager->flush();
 
@@ -84,25 +84,25 @@ class RestaurantController extends AbstractController
     }
 
     #[OA\Delete(
-        path: '/api/restaurant/{id}',
-        summary: 'Supprimer un restaurant par ID',
+        path: '/api/game/{id}',
+        summary: 'Supprimer un jeu par ID',
         parameters: [
             new OA\Parameter(
                 name: 'id',
                 in: 'path',
                 required: true,
-                description: 'ID du restaurant à supprimer',
+                description: 'ID du jeu à supprimer',
                 schema: new OA\Schema(type: 'integer')
             )
         ],
         responses: [
             new OA\Response(
                 response: 204,
-                description: 'Restaurant supprimé avec succès'
+                description: 'Jeu supprimé avec succès'
             ),
             new OA\Response(
                 response: 404,
-                description: 'Restaurant non trouvé'
+                description: 'Jeu non trouvé'
             )
         ]
     )]
@@ -110,10 +110,10 @@ class RestaurantController extends AbstractController
     #[Route('/{id}', name: 'delete', methods: 'DELETE')]
     public function delete(int $id): JsonResponse
     {
-        // ... Supprime le restaurant de la BDD
-        $restaurant = $this->repository->findOneBy(['id' => $id]);
-        if ($restaurant) {
-            $this->manager->remove($restaurant);
+        // ... Supprime le jeu de la BDD
+        $game = $this->repository->findOneBy(['id' => $id]);
+        if ($game) {
+            $this->manager->remove($game);
             $this->manager->flush();
     
             return new JsonResponse(null, Response::HTTP_NO_CONTENT);
@@ -122,34 +122,34 @@ class RestaurantController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/api/restaurant/{id}',
-        summary: 'Afficher un restaurant par ID',
+        path: '/api/game/{id}',
+        summary: 'Afficher un jeu par ID',
         parameters: [
             new OA\Parameter(
                 name: 'id',
                 in: 'path',
                 required: true,
-                description: 'ID du restaurant à afficher',
+                description: 'ID du jeu à afficher',
                 schema: new OA\Schema(type: 'integer')
             )
         ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Restaurant trouvé avec succès',
+                description: 'Jeu trouvé avec succès',
                 content: new OA\JsonContent(
                     type: 'object',
                     properties: [
                         new OA\Property(property: 'id', type: 'integer', example: 1),
-                        new OA\Property(property: 'name', type: 'string', example: 'Nom du restaurant'),
-                        new OA\Property(property: 'description', type: 'string', example: 'Description du restaurant'),
+                        new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
+                        new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time')
                     ]
                 )
             ),
             new OA\Response(
                 response: 404,
-                description: 'Restaurant non trouvé'
+                description: 'Jeu non trouvé'
             )
         ]
     )]
@@ -157,11 +157,11 @@ class RestaurantController extends AbstractController
     #[Route('/{id}', name: 'show', methods: 'GET')]
     public function show(int $id): JsonResponse
     {
-        // ... Affiche le restaurant de la BDD
-        $restaurant = $this->repository->findOneBy(['id' => $id]);
+        // ... Affiche le jeu de la BDD
+        $game = $this->repository->findOneBy(['id' => $id]);
 
-        if ($restaurant) {
-            $responseData = $this->serializer->serialize($restaurant, 'json');
+        if ($game) {
+            $responseData = $this->serializer->serialize($game, 'json');
 
             return new JsonResponse($responseData, Response::HTTP_OK, [], true);
         }
@@ -171,29 +171,29 @@ class RestaurantController extends AbstractController
 
     #[Route(methods: 'POST')]
     #[OA\Post(
-        path: '/api/restaurant',
-        summary: 'Créer un restaurant',
+        path: '/api/game',
+        summary: 'Créer un jeu',
         requestBody: new OA\RequestBody(
             required: true,
-            description: 'Données du restaurant à créer',
+            description: 'Données du jeu à créer',
             content: new OA\JsonContent(
                 type: 'object',
                 properties: [
-                    new OA\Property(property: 'name', type: 'string', example: 'Nom du restaurant'),
-                    new OA\Property(property: 'description', type: 'string', example: 'Description du restaurant')
+                    new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
+                    new OA\Property(property: 'description', type: 'string', example: 'Description du jeu')
                 ]
             )
         ),
         responses: [
             new OA\Response(
                 response: 201,
-                description: 'Restaurant créé avec succès',
+                description: 'Jeu créé avec succès',
                 content: new OA\JsonContent(
                     type: 'object',
                     properties: [
                         new OA\Property(property: 'id', type: 'integer', example: 1),
-                        new OA\Property(property: 'name', type: 'string', example: 'Nom du restaurant'),
-                        new OA\Property(property: 'description', type: 'string', example: 'Description du restaurant'),
+                        new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
+                        new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time')
                     ]
                 )
@@ -203,16 +203,16 @@ class RestaurantController extends AbstractController
 
     public function new(Request $request): JsonResponse
     {
-        $restaurant = $this->serializer->deserialize($request->getContent(), Restaurant::class, 'json');
-        $restaurant->setCreatedAt(new DateTimeImmutable());
+        $game = $this->serializer->deserialize($request->getContent(), Game::class, 'json');
+        $game->setCreatedAt(new DateTimeImmutable());
 
-        $this->manager->persist($restaurant);
+        $this->manager->persist($game);
         $this->manager->flush();
 
-        $responseData = $this->serializer->serialize($restaurant, 'json');
+        $responseData = $this->serializer->serialize($game, 'json');
         $location = $this->urlGenerator->generate(
-            'app_api_restaurant_show',
-            ['id' => $restaurant->getId()],
+            'app_api_game_show',
+            ['id' => $game->getId()],
             UrlGeneratorInterface::ABSOLUTE_URL,
         );
 
