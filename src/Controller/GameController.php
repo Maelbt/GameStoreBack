@@ -46,7 +46,8 @@ class GameController extends AbstractController
                 type: 'object',
                 properties: [
                     new OA\Property(property: 'name', type: 'string', example: 'Nouveau nom du jeu'),
-                    new OA\Property(property: 'description', type: 'string', example: 'Nouvelle description du jeu')
+                    new OA\Property(property: 'description', type: 'string', example: 'Nouvelle description du jeu'),
+                    new OA\Property(property: 'price', type: 'integer', example: 70)
                 ]
             )
         ),
@@ -143,6 +144,7 @@ class GameController extends AbstractController
                         new OA\Property(property: 'id', type: 'integer', example: 1),
                         new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
                         new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
+                        new OA\Property(property: 'price', type: 'integer', example: 70),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time')
                     ]
                 )
@@ -180,7 +182,8 @@ class GameController extends AbstractController
                 type: 'object',
                 properties: [
                     new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
-                    new OA\Property(property: 'description', type: 'string', example: 'Description du jeu')
+                    new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
+                    new OA\Property(property: 'price', type: 'integer', example: 70)
                 ]
             )
         ),
@@ -194,6 +197,7 @@ class GameController extends AbstractController
                         new OA\Property(property: 'id', type: 'integer', example: 1),
                         new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
                         new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
+                        new OA\Property(property: 'price', type: 'integer', example: 70),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time')
                     ]
                 )
