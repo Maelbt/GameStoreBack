@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
-#[Route('api/restaurant', name: 'app_api_restaurant_')]
+#[Route('api/game', name: 'app_api_game_')]
 
 class GameController extends AbstractController
 {
