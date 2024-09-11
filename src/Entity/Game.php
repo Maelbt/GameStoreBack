@@ -23,7 +23,16 @@ class Game
     private ?string $description = null;
 
     #[ORM\Column(length:32)]
-    private ?int $price = null;
+    private ?int $pegi = null;
+
+    #[ORM\Column(length:32)]
+    private ?string $genre = null;
+
+    #[ORM\Column(length:32)]
+    private ?float $price = null;
+
+    #[ORM\Column(length:32)]
+    private ?int $quantity = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -68,14 +77,50 @@ class Game
         return $this;
     }
 
-    public function getPrice(): ?int
+    public function getPegi(): ?int
+    {
+        return $this->pegi;
+    }
+
+    public function setPegi(int $pegi): static
+    {
+        $this->pegi = $pegi;
+
+        return $this;
+    }
+
+    public function getGenre(): ?string
+    {
+        return $this->genre;
+    }
+
+    public function setGenre(string $genre): static
+    {
+        $this->genre = $genre;
+
+        return $this;
+    }
+
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice(int $price): static
+    public function setPrice(float $price): static
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->quantity;
+    }
+
+    public function setQuantity(int $quantity): static
+    {
+        $this->quantity = $quantity;
 
         return $this;
     }

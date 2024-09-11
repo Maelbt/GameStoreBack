@@ -6,6 +6,7 @@ use App\Entity\Game;
 use App\Repository\GameRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
@@ -47,7 +48,10 @@ class GameController extends AbstractController
                 properties: [
                     new OA\Property(property: 'name', type: 'string', example: 'Nouveau nom du jeu'),
                     new OA\Property(property: 'description', type: 'string', example: 'Nouvelle description du jeu'),
-                    new OA\Property(property: 'price', type: 'integer', example: 70)
+                    new OA\Property(property: 'pegi', type: 'integer', example: 16),
+                    new OA\Property(property: 'genre', type: 'string', example: 'RPG'),
+                    new OA\Property(property: 'price', type: 'float', example: 69.99),
+                    new OA\Property(property: 'quantity', type: 'integer', example: 100)
                 ]
             )
         ),
@@ -144,7 +148,10 @@ class GameController extends AbstractController
                         new OA\Property(property: 'id', type: 'integer', example: 1),
                         new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
                         new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
-                        new OA\Property(property: 'price', type: 'integer', example: 70),
+                        new OA\Property(property: 'pegi', type: 'integer', example: 16),
+                        new OA\Property(property: 'genre', type: 'string', example: 'RPG'),
+                        new OA\Property(property: 'price', type: 'float', example: 69.99),
+                        new OA\Property(property: 'quantity', type: 'integer', example: 100),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time')
                     ]
                 )
@@ -183,7 +190,10 @@ class GameController extends AbstractController
                 properties: [
                     new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
                     new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
-                    new OA\Property(property: 'price', type: 'integer', example: 70)
+                    new OA\Property(property: 'pegi', type: 'integer', example: 16),
+                    new OA\Property(property: 'genre', type: 'string', example: 'RPG'),
+                    new OA\Property(property: 'price', type: 'float', example: 69.99),
+                    new OA\Property(property: 'quantity', type: 'integer', example: 100)
                 ]
             )
         ),
@@ -197,7 +207,10 @@ class GameController extends AbstractController
                         new OA\Property(property: 'id', type: 'integer', example: 1),
                         new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
                         new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
-                        new OA\Property(property: 'price', type: 'integer', example: 70),
+                        new OA\Property(property: 'pegi', type: 'integer', example: 16),
+                        new OA\Property(property: 'genre', type: 'string', example: 'RPG'),
+                        new OA\Property(property: 'price', type: 'float', example: 69.99),
+                        new OA\Property(property: 'quantity', type: 'integer', example: 100),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time')
                     ]
                 )
@@ -221,5 +234,61 @@ class GameController extends AbstractController
         );
 
         return new JsonResponse($responseData, Response::HTTP_CREATED, ["Location" => $location], true);
+    }
+
+    #[Route(methods: 'GET')]
+    #[OA\Get(
+        path: '/api/game',
+        summary: 'Afficher tous les jeux de la BDD',
+        parameters: [],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Jeux trouvé avec succès',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'id', type: 'integer', example: 1),
+                        new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
+                        new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
+                        new OA\Property(property: 'pegi', type: 'integer', example: 16),
+                        new OA\Property(property: 'genre', type: 'string', example: 'RPG'),
+                        new OA\Property(property: 'price', type: 'float', example: 69.99),
+                        new OA\Property(property: 'quantity', type: 'integer', example: 100),
+                        new OA\Property(property: 'createdAt', type: 'string', format: 'date-time')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Jeux non trouvé'
+            )
+        ]
+    )]
+
+    public function allgames(): JsonResponse
+    {
+        // ... Affiche tous les jeux de la BDD
+        $find_all = $this->repository->findAll();
+        $games = [];
+        foreach($find_all as $game)
+        {
+            $games[] = [
+                'id' => $game->getId(),
+                'name' => $game->getName(),
+                'description' => $game->getDescription(),
+                'pegi' => $game->getPegi(),
+                'genre' => $game->getGenre(),
+                'price' => $game->getPrice(),
+                'quantity' => $game->getQuantity()
+            ];
+        }
+        if(count($games)>=0)
+        {
+        $responseData = $this->serializer->serialize($games, 'json');
+        return new JsonResponse($responseData, Response::HTTP_OK, [], true);
+        }
+
+        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
 }

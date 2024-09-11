@@ -19,10 +19,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $adresse = null;
+
+    #[ORM\Column(length: 32, nullable: true)]
+    private ?int $codepostal = null;
+
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $ville = null;
+
     /**
      * @var list<string> The user roles
      */
-    #[ORM\Column]
+    #[ORM\Column(length: 180)]
     private array $roles = [];
 
     /**
@@ -69,6 +78,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(string $adresse): static
+    {
+        $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    public function getCodePostal(): ?int
+    {
+        return $this->codepostal;
+    }
+
+    public function setCodePostal(int $codepostal): static
+    {
+        $this->codepostal = $codepostal;
+
+        return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->ville;
+    }
+
+    public function setVille(string $ville): static
+    {
+        $this->ville = $ville;
+
+        return $this;
+    }
+
     /**
      * A visual identifier that represents this user.
      *
@@ -87,8 +132,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        // guarantee every user at least has role client
+        $roles[] = 'client';
 
         return array_unique($roles);
     }

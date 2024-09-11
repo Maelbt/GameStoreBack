@@ -38,10 +38,11 @@ security:
         - { path: ^/api/registration, roles : PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path : ^/api/doc, roles : PUBLIC_ACCESS }
-        - { path: ^/api, roles : ROLE_USER }
+        - { path: ^/api/game, roles : PUBLIC_ACCESS }
+        - { path: ^/api, roles : client }
 
     role_hierarchy:
-       ROLE_ADMIN: ROLE_USER
+       ROLE_ADMIN: client
 
 when@test:
     security:
