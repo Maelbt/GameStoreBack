@@ -19,13 +19,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 180, nullable: true)]
+    #[ORM\Column(length: 180)]
     private ?string $adresse = null;
 
-    #[ORM\Column(length: 32, nullable: true)]
-    private ?int $codepostal = null;
+    #[ORM\Column(length: 32)]
+    private ?string $codepostal = null;
 
-    #[ORM\Column(length: 180, nullable: true)]
+    #[ORM\Column(length: 180)]
     private ?string $ville = null;
 
     /**
@@ -133,7 +133,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has role client
-        $roles[] = 'client';
+        $roles[] = 'ROLE_CLIENT';
 
         return array_unique($roles);
     }

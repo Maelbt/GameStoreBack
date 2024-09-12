@@ -49,9 +49,12 @@ class GameController extends AbstractController
                     new OA\Property(property: 'name', type: 'string', example: 'Nouveau nom du jeu'),
                     new OA\Property(property: 'description', type: 'string', example: 'Nouvelle description du jeu'),
                     new OA\Property(property: 'pegi', type: 'integer', example: 16),
-                    new OA\Property(property: 'genre', type: 'string', example: 'RPG'),
+                    new OA\Property(property: 'genre', type: 'array', items: new OA\Items(type: 'string', example: 'RPG')),
+                    new OA\Property(property: 'plateforme', type: 'array', items: new OA\Items(type: 'string', example: 'Playstation')),
                     new OA\Property(property: 'price', type: 'float', example: 69.99),
-                    new OA\Property(property: 'quantity', type: 'integer', example: 100)
+                    new OA\Property(property: 'promotion', type: 'integer', example: 20),
+                    new OA\Property(property: 'quantity', type: 'integer', example: 100),
+                    new OA\Property(property: 'releaseDate', type: 'string', example: '06/04/1999')
                 ]
             )
         ),
@@ -149,9 +152,12 @@ class GameController extends AbstractController
                         new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
                         new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
                         new OA\Property(property: 'pegi', type: 'integer', example: 16),
-                        new OA\Property(property: 'genre', type: 'string', example: 'RPG'),
+                        new OA\Property(property: 'genre', type: 'array', items: new OA\Items(type: 'string', example: 'RPG')),
+                        new OA\Property(property: 'plateforme', type: 'array', items: new OA\Items(type: 'string', example: 'Playstation')),
                         new OA\Property(property: 'price', type: 'float', example: 69.99),
+                        new OA\Property(property: 'promotion', type: 'integer', example: 20),
                         new OA\Property(property: 'quantity', type: 'integer', example: 100),
+                        new OA\Property(property: 'releaseDate', type: 'string', example: '06/04/1999'),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time')
                     ]
                 )
@@ -178,6 +184,31 @@ class GameController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
 
+    /*public function show($id, GameRepository $gameRepository): JsonResponse
+    {
+        $game = $gameRepository->findWithPicture($id);
+
+        if (!$game) {
+            return new JsonResponse(['message' => 'Game not found'], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $data = [
+            'id' => $game->getId(),
+            'name' => $game->getName(),
+            'description' => $game->getDescription(),
+            'pegi' => $game->getPegi(),
+            'genre' => $game->getGenre(),
+            'plateforme' => $game->getPlateforme(),
+            'price' => $game->getPrice(),
+            'promotion' => $game->getPromotion(),
+            'quantity' => $game->getQuantity(),
+            'releaseDate' => $game->getReleaseDate(),
+            'picture' => $game->getPicture()->getPath(), // Assurez-vous que cela retourne l'URL ou le chemin correct
+        ];
+
+        return new JsonResponse($data);
+    }*/
+
     #[Route(methods: 'POST')]
     #[OA\Post(
         path: '/api/game',
@@ -191,9 +222,12 @@ class GameController extends AbstractController
                     new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
                     new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
                     new OA\Property(property: 'pegi', type: 'integer', example: 16),
-                    new OA\Property(property: 'genre', type: 'string', example: 'RPG'),
+                    new OA\Property(property: 'genre', type: 'array', items: new OA\Items(type: 'string', example: 'RPG')),
+                    new OA\Property(property: 'plateforme', type: 'array', items: new OA\Items(type: 'string', example: 'Playstation')),
                     new OA\Property(property: 'price', type: 'float', example: 69.99),
-                    new OA\Property(property: 'quantity', type: 'integer', example: 100)
+                    new OA\Property(property: 'promotion', type: 'integer', example: 20),
+                    new OA\Property(property: 'quantity', type: 'integer', example: 100),
+                    new OA\Property(property: 'releaseDate', type: 'string', example: '06/04/1999')
                 ]
             )
         ),
@@ -208,9 +242,12 @@ class GameController extends AbstractController
                         new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
                         new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
                         new OA\Property(property: 'pegi', type: 'integer', example: 16),
-                        new OA\Property(property: 'genre', type: 'string', example: 'RPG'),
+                        new OA\Property(property: 'genre', type: 'array', items: new OA\Items(type: 'string', example: 'RPG')),
+                        new OA\Property(property: 'plateforme', type: 'array', items: new OA\Items(type: 'string', example: 'Playstation')),
                         new OA\Property(property: 'price', type: 'float', example: 69.99),
+                        new OA\Property(property: 'promotion', type: 'integer', example: 20),
                         new OA\Property(property: 'quantity', type: 'integer', example: 100),
+                        new OA\Property(property: 'releaseDate', type: 'string', example: '06/04/1999'),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time')
                     ]
                 )
@@ -252,9 +289,12 @@ class GameController extends AbstractController
                         new OA\Property(property: 'name', type: 'string', example: 'Nom du jeu'),
                         new OA\Property(property: 'description', type: 'string', example: 'Description du jeu'),
                         new OA\Property(property: 'pegi', type: 'integer', example: 16),
-                        new OA\Property(property: 'genre', type: 'string', example: 'RPG'),
+                        new OA\Property(property: 'genre', type: 'array', items: new OA\Items(type: 'string', example: 'RPG')),
+                        new OA\Property(property: 'plateforme', type: 'array', items: new OA\Items(type: 'string', example: 'Playstation')),
                         new OA\Property(property: 'price', type: 'float', example: 69.99),
+                        new OA\Property(property: 'promotion', type: 'integer', example: 20),
                         new OA\Property(property: 'quantity', type: 'integer', example: 100),
+                        new OA\Property(property: 'releaseDate', type: 'string', example: '06/04/1999'),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time')
                     ]
                 )
@@ -279,8 +319,11 @@ class GameController extends AbstractController
                 'description' => $game->getDescription(),
                 'pegi' => $game->getPegi(),
                 'genre' => $game->getGenre(),
+                'plateforme' => $game->getPlateforme(),
                 'price' => $game->getPrice(),
-                'quantity' => $game->getQuantity()
+                'promotion' => $game->getPromotion(),
+                'quantity' => $game->getQuantity(),
+                'releaseDate' => $game->getReleaseDate()
             ];
         }
         if(count($games)>=0)

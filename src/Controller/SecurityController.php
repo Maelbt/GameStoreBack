@@ -38,6 +38,9 @@ class SecurityController extends AbstractController
                 properties: [
                     new OA\Property(property: 'firstName', type: 'string', example: 'Maël'),
                     new OA\Property(property: 'lastName', type: 'string', example: 'Boisselot'),
+                    new OA\Property(property: 'adresse', type: 'string', example: '9 rue Charles Boudin'),
+                    new OA\Property(property: 'codepostal', type: 'string', example: '33000'),
+                    new OA\Property(property: 'ville', type: 'string', example: 'Bordeaux'),
                     new OA\Property(property: 'email', type: 'string', example: 'adresse@email.com'),
                     new OA\Property(property: 'password', type: 'string', example: 'Mot de passe'),
                 ]
@@ -52,7 +55,7 @@ class SecurityController extends AbstractController
                     properties: [
                         new OA\Property(property: 'user', type: 'string', example: 'Nom d\'utilisateur'),
                         new OA\Property(property: 'apiToken', type: 'string', example: '31a023e212f116124a36af14ea0c1c3806eb9378'),
-                        new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string', example: 'client')),
+                        new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string', example: 'ROLE_CLIENT')),
                     ]
                 )
             ),
@@ -97,7 +100,7 @@ class SecurityController extends AbstractController
                     properties: [
                         new OA\Property(property: 'user', type: 'string', example: 'Nom d\'utilisateur'),
                         new OA\Property(property: 'apiToken', type: 'string', example: '31a023e212f116124a36af14ea0c1c3806eb9378'),
-                        new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string', example: 'client')),
+                        new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string', example: 'ROLE_CLIENT')),
                     ]
                 )
             ),
@@ -149,6 +152,10 @@ class SecurityController extends AbstractController
                     type: 'object',
                     properties: [
                         new OA\Property(property: 'firstName', type: 'string', example: 'Nouveau prénom'),
+                        new OA\Property(property: 'lastName', type: 'string', example: 'Nouveau nom'),
+                        new OA\Property(property: 'adresse', type: 'string', example: '9 rue Charles Boudin'),
+                        new OA\Property(property: 'codepostal', type: 'string', example: '33000'),
+                        new OA\Property(property: 'ville', type: 'string', example: 'Bordeaux'),
                     ]
                 )
             ),

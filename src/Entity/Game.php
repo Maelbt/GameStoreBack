@@ -25,14 +25,23 @@ class Game
     #[ORM\Column(length:32)]
     private ?int $pegi = null;
 
-    #[ORM\Column(length:32)]
-    private ?string $genre = null;
+    #[ORM\Column(length:180)]
+    private ?array $genre = [];
+
+    #[ORM\Column(length: 180)]
+    private ?array $plateforme = [];
 
     #[ORM\Column(length:32)]
     private ?float $price = null;
 
     #[ORM\Column(length:32)]
+    private ?int $promotion = null;
+
+    #[ORM\Column(length:32)]
     private ?int $quantity = null;
+
+    #[ORM\Column(length:32)]
+    private ?string $releaseDate = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -40,12 +49,12 @@ class Game
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\OneToMany(targetEntity: Picture::class, mappedBy: 'game', orphanRemoval: true)]
-    private Collection $pictures;
+    #[ORM\OneToOne(targetEntity: Picture::class, mappedBy: 'game', orphanRemoval: true)]
+    private $picture;
 
     public function __construct()
     {
-        $this->pictures = new ArrayCollection();
+        $this->picture = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -89,14 +98,30 @@ class Game
         return $this;
     }
 
-    public function getGenre(): ?string
+    public function getGenre(): ?array
     {
-        return $this->genre;
+        $genre = $this->genre;
+
+        return array_unique($genre);
     }
 
-    public function setGenre(string $genre): static
+    public function setGenre(array $genre): static
     {
         $this->genre = $genre;
+
+        return $this;
+    }
+
+    public function getPlateforme(): ?array
+    {
+        $plateforme = $this->plateforme;
+
+        return array_unique($plateforme);
+    }
+
+    public function setPlateforme(array $plateforme): static
+    {
+        $this->plateforme = $plateforme;
 
         return $this;
     }
@@ -113,6 +138,18 @@ class Game
         return $this;
     }
 
+    public function getPromotion(): ?int
+    {
+        return $this->promotion;
+    }
+
+    public function setPromotion(int $promotion): static
+    {
+        $this->promotion = $promotion;
+
+        return $this;
+    }
+
     public function getQuantity(): ?int
     {
         return $this->quantity;
@@ -121,6 +158,18 @@ class Game
     public function setQuantity(int $quantity): static
     {
         $this->quantity = $quantity;
+
+        return $this;
+    }
+
+    public function getReleaseDate(): ?string
+    {
+        return $this->releaseDate;
+    }
+
+    public function setReleaseDate(string $releaseDate): static
+    {
+        $this->releaseDate = $releaseDate;
 
         return $this;
     }

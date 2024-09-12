@@ -38,11 +38,13 @@ security:
         - { path: ^/api/registration, roles : PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path : ^/api/doc, roles : PUBLIC_ACCESS }
-        - { path: ^/api/game, roles : PUBLIC_ACCESS }
-        - { path: ^/api, roles : client }
+        - { path: ^/api/game, roles : PUBLIC_ACCESS, methods:[GET] }
+        - { path: ^/api/game, roles : ROLE_ADMIN, methods:[PUT, DELETE, POST] }
+        - { path: ^/api, roles : ROLE_USER }
 
     role_hierarchy:
-       ROLE_ADMIN: client
+       ROLE_ADMIN: ROLE_USER
+       ROLE_USER: ROLE_CLIENT
 
 when@test:
     security:

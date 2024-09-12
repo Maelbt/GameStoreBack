@@ -16,8 +16,8 @@ class Picture
     #[ORM\Column(length: 64)]
     private ?string $title = null;
 
-    #[ORM\Column(length: 64)]
-    private ?string $slug = null;
+    #[ORM\Column(length: 180)]
+    private ?string $path = null; //Colonne pour stocker le chemin de l'image
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -25,9 +25,9 @@ class Picture
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'pictures')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?game $game = null;
+    #[ORM\OneToOne(targetEntity: Game::class, inversedBy: 'picture')]
+    #[ORM\JoinColumn(name: 'game_id', referencedColumnName: 'id', nullable: false)]
+    private $game;
 
     public function getId(): ?int
     {
@@ -46,14 +46,14 @@ class Picture
         return $this;
     }
 
-    public function getSlug(): ?string
+    public function getPath(): ?string
     {
-        return $this->slug;
+        return $this->path;
     }
 
-    public function setSlug(string $slug): static
+    public function setPath(string $path): self
     {
-        $this->slug = $slug;
+        $this->path = $path;
 
         return $this;
     }
