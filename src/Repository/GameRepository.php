@@ -47,4 +47,25 @@ class GameRepository extends ServiceEntityRepository
     {
         return $this->findBy(array(), array('genre' => 'ASC'));
     }
+
+    public function findByCriteria(array $criteria): array
+    {
+        $qb = $this->createQueryBuilder('g');
+
+        if (isset($criteria['genre'])) {
+            $qb->andWhere('g.genre LIKE :genre')
+               ->setParameter('genre', '%' . $criteria['genre'] . '%');
+        }
+
+        if (isset($criteria['price'])) {
+            $priceRange = explode('-', $criteria['price']);
+            if (count($priceRange) === 2) {
+                $qb->andWhere('g.price BETWEEN :minPrice AND :maxPrice')
+                   ->setParameter('minPrice', $priceRange[0])
+                   ->setParameter('maxPrice', $priceRange[1]);
+            }
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

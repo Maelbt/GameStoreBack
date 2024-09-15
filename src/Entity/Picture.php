@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\PictureRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 #[ORM\Entity(repositoryClass: PictureRepository::class)]
 class Picture
@@ -11,12 +13,14 @@ class Picture
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['picture:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 64)]
     private ?string $title = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 255)]
+    #[Groups(['picture:read'])]
     private ?string $path = null; //Colonne pour stocker le chemin de l'image
 
     #[ORM\Column]
@@ -27,7 +31,9 @@ class Picture
 
     #[ORM\OneToOne(targetEntity: Game::class, inversedBy: 'picture')]
     #[ORM\JoinColumn(name: 'game_id', referencedColumnName: 'id', nullable: false)]
-    private $game;
+    #[Groups(['picture:read'])]
+    #[MaxDepth(1)]
+    private ?Game $game = null;
 
     public function getId(): ?int
     {
@@ -87,9 +93,14 @@ class Picture
         return $this->game;
     }
 
-    public function setGame(?game $game): static
+    public function setGame(?Game $game): self
     {
         $this->game = $game;
+
+        // set (or unset) the owning side of the relation if necessary
+        if ($game !== null && $game->getPicture() !== $this) {
+            $game->setPicture($this);
+        }
 
         return $this;
     }

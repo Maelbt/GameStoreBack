@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 #[ORM\Entity(repositoryClass: GameRepository::class)]
 class Game
@@ -14,9 +16,11 @@ class Game
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['game:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 32)]
+    #[ORM\Column(length: 255)]
+    #[Groups(['game:read'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -50,11 +54,33 @@ class Game
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\OneToOne(targetEntity: Picture::class, mappedBy: 'game', orphanRemoval: true)]
-    private $picture;
+    #[Groups(['game:read'])]
+    #[MaxDepth(1)]
+    private ?Picture $picture = null;
+
+    /**
+     * @var Collection<int, Commande>
+     */
+    #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'game')]
+    private Collection $commandes;
+
+    /**
+     * @var Collection<int, Panier>
+     */
+    #[ORM\ManyToMany(targetEntity: Panier::class, inversedBy: 'game')]
+    private Collection $paniers;
+
+    /**
+     * @var Collection<int, Ventes>
+     */
+    #[ORM\ManyToMany(targetEntity: Ventes::class, mappedBy: 'game')]
+    private Collection $ventes;
 
     public function __construct()
     {
-        $this->picture = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
+        $this->ventes = new ArrayCollection();
+        $this->paniers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -198,31 +224,103 @@ class Game
         return $this;
     }
 
-    /**
-     * @return Collection<int, Picture>
-     */
-    public function getPictures(): Collection
+ 
+    public function getPicture(): ?Picture
     {
-        return $this->pictures;
+        return $this->picture;
     }
 
-    public function addPicture(Picture $picture): static
+    public function setPicture(?Picture $picture): self
     {
-        if (!$this->pictures->contains($picture)) {
-            $this->pictures->add($picture);
+        if ($picture === null && $this->picture !== null) {
+            $this->picture->setGame(null);
+        }
+
+        if ($picture !== null && $picture->getGame() !== $this) {
             $picture->setGame($this);
+        }
+
+        $this->picture = $picture;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): static
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->addGame($this);
         }
 
         return $this;
     }
 
-    public function removePicture(Picture $picture): static
+    public function removeCommande(Commande $commande): static
     {
-        if ($this->pictures->removeElement($picture)) {
-            // set the owning side to null (unless already changed)
-            if ($picture->getGame() === $this) {
-                $picture->setGame(null);
-            }
+        if ($this->commandes->removeElement($commande)) {
+            $commande->removeGame($this);
+        }
+
+        return $this;
+    }
+
+   /**
+     * @return Collection<int, Panier>
+     */
+    public function getPaniers(): Collection
+    {
+        return $this->paniers;
+    }
+
+    public function addPanier(Panier $panier): static
+    {
+        if (!$this->paniers->contains($panier)) {
+            $this->paniers->add($panier);
+            $panier->addGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removePanier(Panier $panier): static
+    {
+        if ($this->paniers->removeElement($panier)) {
+            $panier->removeGame($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Ventes>
+     */
+    public function getVentes(): Collection
+    {
+        return $this->ventes;
+    }
+
+    public function addVente(Ventes $vente): static
+    {
+        if (!$this->ventes->contains($vente)) {
+            $this->ventes->add($vente);
+            $vente->addGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVente(Ventes $vente): static
+    {
+        if ($this->ventes->removeElement($vente)) {
+            $vente->removeGame($this);
         }
 
         return $this;

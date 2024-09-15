@@ -75,6 +75,7 @@ class GameController extends AbstractController
     {
         // ... Edite le jeu et le sauvegarde en BDD
         $game = $this->repository->findOneBy(['id' => $id]);
+
         if ($game) {
            $game = $this->serializer->deserialize(
                $request->getContent(),
@@ -158,7 +159,8 @@ class GameController extends AbstractController
                         new OA\Property(property: 'promotion', type: 'integer', example: 20),
                         new OA\Property(property: 'quantity', type: 'integer', example: 100),
                         new OA\Property(property: 'releaseDate', type: 'string', example: '06/04/1999'),
-                        new OA\Property(property: 'createdAt', type: 'string', format: 'date-time')
+                        new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
+                        new OA\Property(property: 'picture', type: 'string', example: 'path/to/image.jpg')
                     ]
                 )
             ),
@@ -171,27 +173,13 @@ class GameController extends AbstractController
 
     #[Route('/{id}', name: 'show', methods: 'GET')]
     public function show(int $id): JsonResponse
-    {
-        // ... Affiche le jeu de la BDD
-        $game = $this->repository->findOneBy(['id' => $id]);
+{
+    $game = $this->repository->find($id);
 
-        if ($game) {
-            $responseData = $this->serializer->serialize($game, 'json');
-
-            return new JsonResponse($responseData, Response::HTTP_OK, [], true);
-        }
-
-        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
-    }
-
-    /*public function show($id, GameRepository $gameRepository): JsonResponse
-    {
-        $game = $gameRepository->findWithPicture($id);
-
-        if (!$game) {
-            return new JsonResponse(['message' => 'Game not found'], JsonResponse::HTTP_NOT_FOUND);
-        }
-
+    if ($game) {
+        $picture = $game->getPicture();
+        $pictureUrl = $picture ? $this->urlGenerator->generate('get_image', ['filename' => $picture->getPath()], UrlGeneratorInterface::ABSOLUTE_URL) : null;
+        
         $data = [
             'id' => $game->getId(),
             'name' => $game->getName(),
@@ -203,11 +191,15 @@ class GameController extends AbstractController
             'promotion' => $game->getPromotion(),
             'quantity' => $game->getQuantity(),
             'releaseDate' => $game->getReleaseDate(),
-            'picture' => $game->getPicture()->getPath(), // Assurez-vous que cela retourne l'URL ou le chemin correct
+            'createdAt' => $game->getCreatedAt()->format('Y-m-d H:i:s'),
+            'picture' => $pictureUrl,
         ];
 
         return new JsonResponse($data);
-    }*/
+    }
+
+    return new JsonResponse(['message' => 'Game not found'], JsonResponse::HTTP_NOT_FOUND);
+}
 
     #[Route(methods: 'POST')]
     #[OA\Post(
@@ -277,7 +269,10 @@ class GameController extends AbstractController
     #[OA\Get(
         path: '/api/game',
         summary: 'Afficher tous les jeux de la BDD',
-        parameters: [],
+        parameters: [
+            new OA\Parameter(name: 'genre', in: 'query', description: 'Filtrer par genre', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'price', in: 'query', description: 'Filtrer par prix', required: false, schema: new OA\Schema(type: 'string')) // Assumes price is a range like "min-max"
+            ],
         responses: [
             new OA\Response(
                 response: 200,
@@ -299,39 +294,59 @@ class GameController extends AbstractController
                     ]
                 )
             ),
-            new OA\Response(
-                response: 404,
-                description: 'Jeux non trouvé'
-            )
+            // new OA\Response(
+            //     response: 404,
+            //     description: 'Jeux non trouvé'
+            // )
         ]
     )]
 
-    public function allgames(): JsonResponse
+    public function allgames(Request $request, PictureController $pictureController): JsonResponse
     {
-        // ... Affiche tous les jeux de la BDD
-        $find_all = $this->repository->findAll();
-        $games = [];
-        foreach($find_all as $game)
-        {
-            $games[] = [
-                'id' => $game->getId(),
-                'name' => $game->getName(),
-                'description' => $game->getDescription(),
-                'pegi' => $game->getPegi(),
-                'genre' => $game->getGenre(),
-                'plateforme' => $game->getPlateforme(),
-                'price' => $game->getPrice(),
-                'promotion' => $game->getPromotion(),
-                'quantity' => $game->getQuantity(),
-                'releaseDate' => $game->getReleaseDate()
-            ];
+        // Récupérer les paramètres de requête
+        $genre = $request->query->get('genre');
+        $price = $request->query->get('price');
+
+        // Construire les critères de filtrage
+        $criteria = [];
+        if ($genre) {
+            $criteria['genre'] = $genre;
         }
-        if(count($games)>=0)
-        {
-        $responseData = $this->serializer->serialize($games, 'json');
-        return new JsonResponse($responseData, Response::HTTP_OK, [], true);
+        if ($price) {
+            // Supposons que le prix est une plage "min-max"
+            $criteria['price'] = $price;
         }
 
-        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        // Obtenir les jeux filtrés depuis le repository
+        $games = $this->repository->findByCriteria($criteria);
+
+        $responseData = [];
+        foreach ($games as $game) {
+           $picture = $game->getPicture();
+           $pictureUrl = $picture ? $this->generateUrl('get_image', ['filename' => $picture->getPath()], UrlGeneratorInterface::ABSOLUTE_URL) : null;
+
+           $responseData[] = [
+            'id' => $game->getId(),
+            'name' => $game->getName(),
+            'description' => $game->getDescription(),
+            'pegi' => $game->getPegi(),
+            'genre' => $game->getGenre(),
+            'plateforme' => $game->getPlateforme(),
+            'price' => $game->getPrice(),
+            'promotion' => $game->getPromotion(),
+            'quantity' => $game->getQuantity(),
+            'releaseDate' => $game->getReleaseDate(),
+            'createdAt' => $game->getCreatedAt()->format('Y-m-d H:i:s'),
+            'picture' => $pictureUrl,
+        ];
     }
+
+    return new JsonResponse($responseData, Response::HTTP_OK);
+
+
+            // $responseData = $this->serializer->serialize($games, 'json');
+            // return new JsonResponse($responseData, Response::HTTP_OK, [], true);
+
+    }
+
 }
