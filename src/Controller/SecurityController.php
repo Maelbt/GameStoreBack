@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use OpenApi\Attributes as OA;
@@ -21,9 +22,10 @@ class SecurityController extends AbstractController
         private EntityManagerInterface $manager,
         private SerializerInterface $serializer,
         private UserPasswordHasherInterface $passwordHasher,
+        ManagerRegistry $doctrine
         )
     {
-
+        $this->repository = $doctrine->getRepository(User::class);
     }
 
     #[Route('/registration', name: 'registration', methods: 'POST')]
@@ -184,6 +186,46 @@ class SecurityController extends AbstractController
            $this->manager->flush();
 
            return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+
+    #[OA\Delete(
+        path: '/api/account/delete/{id}',
+        summary: 'Supprimer un utilisateur par ID',
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'ID du user à supprimer',
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 204,
+                description: 'User supprimé avec succès'
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'User non trouvé'
+            )
+        ]
+    )]
+
+    #[Route('/account/delete/{id}', name: 'delete', methods: 'DELETE')]
+    public function delete(int $id): JsonResponse
+    {
+        // ... Supprime l'utilisateur de la BDD
+        $user = $this->repository->find($id);
+
+        if ($user) {
+            $this->manager->remove($user);
+            $this->manager->flush();
+    
+            return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        }
+        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
 }
 
