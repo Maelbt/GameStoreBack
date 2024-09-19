@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
 class Game
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
     #[ORM\Column]
     #[Groups(['game:read'])]
     private ?int $id = null;

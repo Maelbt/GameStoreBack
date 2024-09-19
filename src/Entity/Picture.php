@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
 class Picture
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
     #[ORM\Column]
     #[Groups(['picture:read'])]
     private ?int $id = null;
