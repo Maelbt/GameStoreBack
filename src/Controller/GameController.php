@@ -178,7 +178,7 @@ class GameController extends AbstractController
 
     if ($game) {
         $picture = $game->getPicture();
-        $pictureUrl = $picture ? "http://localhost:3000/images/".$picture->getPath(): null;
+        $pictureUrl = $picture ? "https://gamestoremb.alwaysdata.net/images/".$picture->getPath(): null;
         
         $data = [
             'id' => $game->getId(),
@@ -323,7 +323,7 @@ class GameController extends AbstractController
         $responseData = [];
         foreach ($games as $game) {
            $picture = $game->getPicture();
-           $pictureUrl = $picture ? "http://localhost:3000/images/".$picture->getPath(): null;
+           $pictureUrl = $picture ? "https://gamestoremb.alwaysdata.net/images/".$picture->getPath(): null;
           $responseData[] = [
             'id' => $game->getId(),
             'name' => $game->getName(),
